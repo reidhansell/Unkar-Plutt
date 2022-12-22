@@ -39,14 +39,15 @@ module.exports = {
 
         const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
 
-        const response2 = "**Mining Contract**\n" +
-            "Status: IN PROGRESS" + "\n" +
-            "Buyer: <@" + interaction.user.id + ">\n" +
-            "Resource: https://swgtracker.com/?r=" + interaction.options.getString('resource') + "\n" +
-            "Quantity: " + interaction.options.getString('quantity') + "\n" +
-            "CPU: " + interaction.options.getString('cpu') + "\n";
+
 
         collector.on('collect', async i => {
+            const response2 = "**Mining Contract**\n" +
+                "Status: IN PROGRESS by <@" + i.user.id + ">\n" +
+                "Buyer: <@" + interaction.user.id + ">\n" +
+                "Resource: https://swgtracker.com/?r=" + interaction.options.getString('resource') + "\n" +
+                "Quantity: " + interaction.options.getString('quantity') + "\n" +
+                "CPU: " + interaction.options.getString('cpu') + "\n";
             await i.update({ content: response2, components: [] });
         });
 
