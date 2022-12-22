@@ -30,16 +30,14 @@ module.exports = {
         const row = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
-                    .setCustomId('primary')
+                    .setCustomId(interaction.id)
                     .setLabel('Accept')
                     .setStyle(ButtonStyle.Primary),
             );
 
-        const filter = i => i.customId === 'primary';
+        const filter = i => i.customId === interaction.id;
 
-        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
-
-
+        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
 
         collector.on('collect', async i => {
             const response2 = "**Mining Contract**\n" +
