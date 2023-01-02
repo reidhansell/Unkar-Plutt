@@ -17,3 +17,5 @@ function acceptContract(initialCrafterInteraction, initialMinerInteraction) {
         "CPU: " + initialCrafterInteraction.options.getString('cpu') + "\n";
     return acceptedContract;
 }
+
+module.exports = { generateContract, acceptContract }

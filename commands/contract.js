@@ -20,12 +20,14 @@ module.exports = {
                 .setDescription('How many credits per unit?')
                 .setRequired(true)),
     async execute(initialCrafterInteraction) {
+        await initialCrafterInteraction.deferReply({ ephemeral: false });
+
         const contract = generateContract(initialCrafterInteraction);
 
         const acceptID = uuidv4();
         const cancelID = uuidv4();
         const row = new ActionRowBuilder()
-            .addComponents(
+            .addComponents([
                 new ButtonBuilder()
                     .setCustomId(acceptID)
                     .setLabel('Accept')
@@ -34,9 +36,9 @@ module.exports = {
                     .setCustomId(cancelID)
                     .setLabel('Cancel')
                     .setStyle(ButtonStyle.Danger)
-            );
+            ]);
 
-        await initialCrafterInteraction.reply({ content: contract, components: [row] });
+        initialCrafterInteraction.editReply({ content: contract, components: [row] });
 
         const acceptFilter = initialMinerInteraction => initialMinerInteraction.customId === acceptID;
 

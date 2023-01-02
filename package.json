@@ -19,7 +19,6 @@
   "homepage": "https://github.com/reidhansell/SWG-SHADE#readme",
   "dependencies": {
     "discord.js": "^14.7.1",
-    "sql.js": "^1.8.0",
     "uuid": "^9.0.0"
   }
 }
