@@ -1,8 +1,6 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-
-const filter = (reaction) => {
-    return reaction.emoji.name === '👍';
-}
+const { generateContract } = require('../utilities/contractGenerator');
+const { db } = require('../databaseManager');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,36 +18,35 @@ module.exports = {
             option.setName('cpu')
                 .setDescription('How many credits per unit?')
                 .setRequired(true)),
-    async execute(interaction) {
-        const response = "**Mining Contract**\n" +
-            "Status: OPEN" + "\n" +
-            "Buyer: <@" + interaction.user.id + ">\n" +
-            "Resource: https://swgtracker.com/?r=" + interaction.options.getString('resource') + "\n" +
-            "Quantity: " + interaction.options.getString('quantity') + "\n" +
-            "CPU: " + interaction.options.getString('cpu') + "\n";
+    async execute(initialCrafterInteraction) {
+        const contract = generateContract(initialCrafterInteraction);
         const row = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
-                    .setCustomId(interaction.id)
+                    .setCustomId(initialCrafterInteraction.id)
                     .setLabel('Accept')
                     .setStyle(ButtonStyle.Primary),
             );
 
-        const filter = i => i.customId === interaction.id;
+        await initialCrafterInteraction.reply({ content: contract, components: [row] });
 
-        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
+        const acceptFilter = initialMinerInteraction => initialMinerInteraction.customId === initialCrafterInteraction.id;
 
-        collector.on('collect', async i => {
-            const response2 = "**Mining Contract**\n" +
-                "Status: IN PROGRESS by <@" + i.user.id + ">\n" +
-                "Buyer: <@" + interaction.user.id + ">\n" +
-                "Resource: https://swgtracker.com/?r=" + interaction.options.getString('resource') + "\n" +
-                "Quantity: " + interaction.options.getString('quantity') + "\n" +
-                "CPU: " + interaction.options.getString('cpu') + "\n";
-            await i.update({ content: response2, components: [] });
+        const collector = initialCrafterInteraction.channel.createMessageComponentCollector({ acceptFilter });
+
+        collector.on('collect', async initialMinerInteraction => {
+            const acceptedContract = acceptContract(initialCrafterInteraction, initialMinerInteraction)
+            const row = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId(initialCrafterInteraction.id)
+                        .setLabel('Accept')
+                        .setStyle(ButtonStyle.Primary),
+                );
+            await initialMinerInteraction.update({ content: acceptedContract, components: [row] });
         });
 
-        await interaction.reply({ content: response, components: [row] });
+
 
     },
 
