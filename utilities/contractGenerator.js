@@ -1,21 +1,21 @@
-function generateContract(initialCrafterInteraction) {
-    const contract = "**Mining Contract**\n" +
+function generateContract(contract) {
+    const contractContent = "**Mining Contract**\n" +
         "Status: OPEN" + "\n" +
-        "Buyer: <@" + initialCrafterInteraction.user.id + ">\n" +
-        "Resource: https://swgtracker.com/?r=" + initialCrafterInteraction.options.getString('resource') + "\n" +
-        "Quantity: " + initialCrafterInteraction.options.getString('quantity') + "\n" +
-        "CPU: " + initialCrafterInteraction.options.getString('cpu') + "\n";
-    return contract;
+        "Buyer: <@" + contract.user.id + ">\n" +
+        "Resource: https://swgtracker.com/?r=" + contract.options.getString('resource') + "\n" +
+        "Quantity: " + contract.options.getString('quantity') + "\n" +
+        "CPU: " + contract.options.getString('cpu') + "\n";
+    return contractContent;
 }
 
-function acceptContract(initialCrafterInteraction, initialMinerInteraction) {
-    const acceptedContract = "**Mining Contract**\n" +
+function acceptContract(contract, initialMinerInteraction) {
+    const acceptedContractContent = "**Mining Contract**\n" +
         "Status: IN PROGRESS by <@" + initialMinerInteraction.user.id + ">\n" +
-        "Buyer: <@" + initialCrafterInteraction.user.id + ">\n" +
-        "Resource: https://swgtracker.com/?r=" + initialCrafterInteraction.options.getString('resource') + "\n" +
-        "Quantity: " + initialCrafterInteraction.options.getString('quantity') + "\n" +
-        "CPU: " + initialCrafterInteraction.options.getString('cpu') + "\n";
-    return acceptedContract;
+        "Buyer: <@" + contract.user.id + ">\n" +
+        "Resource: https://swgtracker.com/?r=" + contract.options.getString('resource') + "\n" +
+        "Quantity: " + contract.options.getString('quantity') + "\n" +
+        "CPU: " + contract.options.getString('cpu') + "\n";
+    return acceptedContractContent;
 }
 
 module.exports = { generateContract, acceptContract }

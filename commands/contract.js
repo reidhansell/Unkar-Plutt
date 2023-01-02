@@ -1,5 +1,5 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const { generateContract } = require('../utilities/contractGenerator');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
+const { generateContract, acceptContract } = require('../utilities/contractGenerator');
 const { db } = require('../databaseManager');
 const { v4: uuidv4 } = require('uuid');
 
@@ -19,14 +19,15 @@ module.exports = {
             option.setName('cpu')
                 .setDescription('How many credits per unit?')
                 .setRequired(true)),
-    async execute(initialCrafterInteraction) {
-        await initialCrafterInteraction.deferReply({ ephemeral: false });
+    async execute(contract) {
+        var crafter = contract.user.id;
+        await contract.deferReply({ ephemeral: false });
 
-        const contract = generateContract(initialCrafterInteraction);
+        const contractContent = generateContract(contract);
 
         const acceptID = uuidv4();
         const cancelID = uuidv4();
-        const row = new ActionRowBuilder()
+        const contractButtons = new ActionRowBuilder()
             .addComponents([
                 new ButtonBuilder()
                     .setCustomId(acceptID)
@@ -38,27 +39,59 @@ module.exports = {
                     .setStyle(ButtonStyle.Danger)
             ]);
 
-        initialCrafterInteraction.editReply({ content: contract, components: [row] });
+        await contract.editReply({ content: contractContent, components: [contractButtons] });
 
-        const acceptFilter = initialMinerInteraction => initialMinerInteraction.customId === acceptID;
+        const collector = contract.channel.createMessageComponentCollector({ componentType: ComponentType.Button });
 
-        const collector = initialCrafterInteraction.channel.createMessageComponentCollector({ acceptFilter });
-
+        var miner = "";
         const unacceptID = uuidv4();
-        collector.on('collect', async initialMinerInteraction => {
-            const acceptedContract = acceptContract(initialCrafterInteraction, initialMinerInteraction)
-            const row = new ActionRowBuilder()
-                .addComponents(
-                    new ButtonBuilder()
-                        .setCustomId(unacceptID)
-                        .setLabel('Unaccept')
-                        .setStyle(ButtonStyle.Danger),
-                );
-            await initialMinerInteraction.update({ content: acceptedContract, components: [row] });
-        });
+        collector.on('collect', async interaction => {
 
-        collector.stop();
+            if (interaction.customId === acceptID) {
+                const acceptedContractContent = acceptContract(contract, interaction);
+                const acceptedContractButtons = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId(unacceptID)
+                            .setLabel('Unaccept')
+                            .setStyle(ButtonStyle.Danger),
+                    );
+                await interaction.update({ content: acceptedContractContent, components: [acceptedContractButtons] });
+                miner = interaction.user.id;
+            }
+            else if (interaction.customId === unacceptID) {
+                if (miner != interaction.user.id) {
+                    await interaction.reply({ content: "You cannot unaccept a contract that you did not accept.", ephemeral: true })
+                } else {
+                    const contractContent = generateContract(contract);
+
+                    const contractButtons = new ActionRowBuilder()
+                        .addComponents([
+                            new ButtonBuilder()
+                                .setCustomId(acceptID)
+                                .setLabel('Accept')
+                                .setStyle(ButtonStyle.Primary),
+                            new ButtonBuilder()
+                                .setCustomId(cancelID)
+                                .setLabel('Cancel')
+                                .setStyle(ButtonStyle.Danger)
+                        ]);
+
+                    await interaction.update({ content: contractContent, components: [contractButtons] });
+                }
+            }
+            else if (interaction.customId === cancelID) {
+                if (crafter != interaction.user.id) {
+                    await interaction.reply({ content: "You cannot cancel a contract that you did not open.", ephemeral: true })
+                } else {
+                    await interaction.update({ content: "" })
+                    await contract.deleteReply();
+                }
+            }
+        });
 
     },
 
 };
+
+//just remove filters altogether, use if statements instead? don't specify interaction type in variable name
