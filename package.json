@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/reidhansell/SWG-SHADE#readme",
   "dependencies": {
+    "better-sqlite3": "^8.0.1",
     "discord.js": "^14.7.1",
-    "sqlite3": "^5.1.4",
     "uuid": "^9.0.0"
   }
 }

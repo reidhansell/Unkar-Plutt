@@ -105,3 +105,6 @@ dist
 
 # Config file (token)
 config.json
+
+# Database
+shade.db

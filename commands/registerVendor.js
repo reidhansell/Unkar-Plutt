@@ -3,20 +3,20 @@ const { registerVendor } = require('../databaseManager');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('registerVendor')
+        .setName('register_vendor')
         .setDescription('Register a vendor!')
         .addStringOption(option =>
-            option.setName('vendorName')
+            option.setName('vendor_name')
                 .setDescription('What is the name of your vendor?')
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('vendorLocation')
+            option.setName('vendor_location')
                 .setDescription('Where is your vendor located?')
                 .setRequired(true)),
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
-        registerVendor(interaction.user.id, interaction.options.getString("vendorName"), interaction.options.getString("vendorLocation"));
-        const response = interaction.options.getString('vendorName') + " has been registered."
+        registerVendor(interaction.user.id, interaction.options.getString("vendor_name"), interaction.options.getString("vendor_location"));
+        const response = interaction.options.getString('vendor_name') + " has been registered."
         await interaction.editReply({ content: response });
     },
 };

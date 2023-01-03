@@ -85,8 +85,9 @@ module.exports = {
                     await interaction.update({ content: contractContent, components: [contractButtons] });
                 }
             } else if (interaction.customId === vendorsID) {
-                const vendors = getVendors(contract.user.id);
-                interaction.reply({ content: vendors })
+                await interaction.deferReply({ ephemeral: true });
+                const vendors = await getVendors(contract.user.id);
+                await interaction.editReply({ content: vendors })
             }
             else if (interaction.customId === cancelID) {
                 if (crafter != interaction.user.id) {

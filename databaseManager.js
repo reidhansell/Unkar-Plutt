@@ -1,36 +1,33 @@
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('database');
+const db = require('better-sqlite3')('shade.db');
 
-db.serialize(() => {
-    db.run("CREATE TABLE IF NOT EXISTS vendor (owner_id TEXT, vendor_name TEXT, location TEXT)");
-    db.run("CREATE TABLE IF NOT EXISTS contract (crafter TEXT, miner TEXT, resource TEXT, quantity TEXT, cpu TEXT, url TEXT)");
+const createVendorTable = db.prepare("CREATE TABLE IF NOT EXISTS vendor (owner_id TEXT, name TEXT, vendor_object JSON)");
+createVendorTable.run();
+const createContractTable = db.prepare("CREATE TABLE IF NOT EXISTS contract (contract_object JSON)");
+createContractTable.run();
 
-    /*const stmt = db.prepare("INSERT INTO lorem VALUES (?)");
-    for (let i = 0; i < 10; i++) {
-        stmt.run("Ipsum " + i);
-    }
-    stmt.finalize();
-
-    db.each("SELECT rowid AS id, info FROM lorem", (err, row) => {
-        console.log(row.id + ": " + row.info);
-    });*/
-});
-
-function registerVendor(ownerID, vendorName, vendorLocation) {
-    const statement = db.prepare("INSERT INTO vendor VALUES (" + ownerID + " TEXT, " + vendorName + " TEXT, " + vendorLocation + ")");
-    statement.finalize();
+function registerVendor(ownerID, name, location) {
+    const vendor = JSON.stringify({ "name": name, "location": location })
+    console.log(vendor);
+    const registerVendor = db.prepare("INSERT INTO vendor VALUES ('" + ownerID + "', '" + name + "', '" + vendor + "')");
+    registerVendor.run();
 }
 
-function unregisterVendor(ownerID, vendorName) {
-    const statement = db.prepare("DELETE FROM vendor WHERE owner_id EQUALS " + ownerID + " AND vendor_name EQUALS " + vendorName);
-    statement.finalize();
+function unregisterVendor(ownerID, name) {
+    const unregisterVendor = db.prepare("DELETE FROM vendor WHERE owner_id='" + ownerID + "' AND name='" + name + "'");
+    unregisterVendor.run();
 }
 
 function getVendors(ownerID) {
-    var vendors = "<@" + ownerID + ">'s vendors:\n";
-    db.each("SELECT * from vendor WHERE owner_id EQUALS " + ownerID, (err, row) => {
-        vendors = vendors + row.info + "\n"
-    })
+    const getVendors = db.prepare("SELECT vendor_object FROM vendor WHERE owner_id='" + ownerID + "'");
+    var vendors = getVendors.all();
+    console.log(vendors);
+    var vendorsContent = "<@" + ownerID + ">'s vendors:\n";
+    for (var i = 0; i < vendors.length; i++) {
+        const vendor = JSON.parse(vendors[i].vendor_object);
+        console.log(vendor);
+        vendorsContent += vendor.name + ": " + vendor.location;
+    }
+    return vendorsContent;
 }
+module.exports = { registerVendor, unregisterVendor, getVendors }
 
-module.exports = { db, registerVendor, unregisterVendor, getVendors }
