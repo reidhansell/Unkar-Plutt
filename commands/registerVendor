@@ -1,0 +1,21 @@
+const { SlashCommandBuilder } = require('discord.js');
+const { registerVendor, unregisterVendor, getVendors } = require('../databaseManager');
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('registerVendor')
+        .setDescription('Register a vendor!')
+        .addStringOption(option =>
+            option.setName('vendorName')
+                .setDescription('What is the name of your vendor?')
+                .setRequired(true))
+        .addStringOption(option =>
+            option.setName('vendorLocation')
+                .setDescription('Where is your vendor located?')
+                .setRequired(true)),
+    async execute(interaction) {
+        await interaction.deferReply({ ephemeral: true });
+        const response = interaction.options.getString('vendorName') + " has been registered."
+        await interaction.editReply({ content: response });
+    },
+};
