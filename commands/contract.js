@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
 const { generateContract, acceptContract } = require('../utilities/contractGenerator');
-const { db } = require('../databaseManager');
+const { getVendors } = require('../databaseManager');
 const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
@@ -45,12 +45,17 @@ module.exports = {
 
         var miner = "";
         const unacceptID = uuidv4();
+        const vendorsID = uuidv4();
         collector.on('collect', async interaction => {
 
             if (interaction.customId === acceptID) {
                 const acceptedContractContent = acceptContract(contract, interaction);
                 const acceptedContractButtons = new ActionRowBuilder()
                     .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId(vendorsID)
+                            .setLabel("Vendors")
+                            .setStyle(ButtonStyle.Primary),
                         new ButtonBuilder()
                             .setCustomId(unacceptID)
                             .setLabel('Unaccept')
@@ -79,6 +84,9 @@ module.exports = {
 
                     await interaction.update({ content: contractContent, components: [contractButtons] });
                 }
+            } else if (interaction.customId === vendorsID) {
+                const vendors = getVendors(contract.user.id);
+                interaction.reply({ content: vendors })
             }
             else if (interaction.customId === cancelID) {
                 if (crafter != interaction.user.id) {
