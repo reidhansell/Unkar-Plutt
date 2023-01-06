@@ -1,6 +1,7 @@
 # SWG-SHADE Bot 1.0!
 
-Commands (press TAB to navigate through parameters when using commands):
+A Discord bot made for crafters in Star Wars Galaxies!
+This bot will enable the following commands in your Discord server (press TAB to navigate through parameters when using commands):
 
 ## /register_vendor {name} {location} {(optional) discounts}
 This command registers your vendor as a drop-off location, and adds it to the /discounts command (only if you supply a discount)
