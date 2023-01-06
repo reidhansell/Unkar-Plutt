@@ -5,15 +5,15 @@ createVendorTable.run();
 const createContractTable = db.prepare("CREATE TABLE IF NOT EXISTS contract (contract_object JSON)");
 createContractTable.run();
 
-function registerVendor(ownerID, name, location) {
+function registerVendor(ownerID, name, location, discounts) {
     const getVendor = db.prepare("SELECT * FROM vendor WHERE owner_id='" + ownerID + "' AND name='" + name + "'");
     var vendor = getVendor.get();
-    if (!vendor) {
+    if (vendor) {
         throw ('You already own a vendor named, "' + name + '"');
     }
-    const newVendor = JSON.stringify({ "name": name, "location": location })
+    const newVendor = JSON.stringify({ "name": name, "location": location, "discounts": discounts });
     console.log(newVendor);
-    const registerVendor = db.prepare("INSERT INTO vendor VALUES ('" + ownerID + "', '" + name + "', '" + vendor + "')");
+    const registerVendor = db.prepare("INSERT INTO vendor VALUES ('" + ownerID + "', '" + name + "', '" + newVendor + "')");
     registerVendor.run();
 }
 
@@ -39,5 +39,21 @@ function getVendors(ownerID) {
     }
     return vendorsContent;
 }
-module.exports = { registerVendor, unregisterVendor, getVendors }
+
+function getDiscounts() {
+    const getVendors = db.prepare("SELECT vendor_object FROM vendor");
+    var vendors = getVendors.all();
+    console.log(vendors);
+    var vendorsContent = "Guild discounts:\n";
+    for (var i = 0; i < vendors.length; i++) {
+        const vendor = JSON.parse(vendors[i].vendor_object);
+        console.log(vendor);
+        if (vendor.discounts != "") {
+            vendorsContent += vendor.name + ": " + vendor.discounts + "\nLocation: " + vendor.location + "\n\n";
+        }
+    }
+    return vendorsContent;
+}
+
+module.exports = { registerVendor, unregisterVendor, getVendors, getDiscounts }
 

@@ -12,16 +12,21 @@ module.exports = {
         .addStringOption(option =>
             option.setName('vendor_location')
                 .setDescription('Where is your vendor located?')
-                .setRequired(true)),
+                .setRequired(true))
+        .addStringOption(option =>
+            option.setName('vendor_discounts')
+                .setDescription('(Optional) Guild discounts?')
+                .setRequired(false)),
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
         try {
-            registerVendor(interaction.user.id, interaction.options.getString("vendor_name"), interaction.options.getString("vendor_location"));
+            const vendor_discounts = interaction.options.getString("vendor_discounts") ?? "";
+            registerVendor(interaction.user.id, interaction.options.getString("vendor_name"), interaction.options.getString("vendor_location"), vendor_discounts);
             const response = interaction.options.getString('vendor_name') + " has been registered."
             await interaction.editReply({ content: response });
         }
         catch (error) {
-            await interaction.editReply({ content: error });
+            await interaction.editReply({ content: error.toString() });
         }
     },
 };

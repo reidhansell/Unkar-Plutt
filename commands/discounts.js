@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { getDiscounts } = require('../databaseManager');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -6,7 +7,7 @@ module.exports = {
         .setDescription('See guild discounts!'),
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
-        const response = "Standard Assault/Battle/Recon Armor: -20% \nMore to be added!"
+        const response = getDiscounts();
         await interaction.editReply({ content: response });
     },
 };
