@@ -35,3 +35,5 @@ Want a new feature? Found a bug? Let me know ASAP and I'll get on it :thumbsup:
 
 ### Contributing
 Anyone is welcome to contribute. Please see the ZenHub tab of this repository for issue tracking and more. Message me to become an official Collaborator
+
+### Testing permissions
