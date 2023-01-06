@@ -4,7 +4,7 @@ A Discord bot made for crafters in Star Wars Galaxies!
 
 This bot will enable the following commands in your Discord server (press TAB to navigate through parameters when using commands)
 
-## Commands:
+## Commands
 
 ### /register_vendor {name} {location} {(optional) discounts}
 This command registers your vendor as a drop-off location, and adds it to the /discounts command (only if you supply a discount)
@@ -32,3 +32,6 @@ Want a new feature? Found a bug? Let me know ASAP and I'll get on it :thumbsup:
 1. Remove "example" from "exampleconfig.js"
 2. Fill in the config file accordingly. All you need is a Guild ID (otherwise known as a Server ID), Client ID, and Token (both of the latter come from Discord's Developer section)
 3. Run "npm start" in your CLI (this will install necessary dependencies, register the bot commands, and run the bot)
+
+### Contributing
+Anyone is welcome to contribute. Please see the ZenHub tab of this repository for issue tracking and more. Message me to become an official Collaborator
