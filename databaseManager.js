@@ -65,7 +65,7 @@ function getContracts(id) {
     var contractsContent = "Your open contracts:\n";
     for (var i = 0; i < contracts.length; i++) {
         const contract = JSON.parse(contracts[i].contract_object);
-        if (contract.status != "CONFIRMED") {
+        if (contract.status != "CONFIRMED" && contract.status != "CANCELLED") {
             contractsContent += contract.resource + ": " + contract.url + "\nStatus: " + contract.status + "\n\n";
         }
     }

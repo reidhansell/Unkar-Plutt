@@ -110,7 +110,11 @@ module.exports = {
                 if (contractObject.crafterID != interaction.user.id) {
                     await interaction.reply({ content: "You cannot close a contract that you did not open.", ephemeral: true })
                 } else {
-                    contractObject.setStatus("CONFIRMED");
+                    if (interaction.customId === cancelID) {
+                        contractObject.setStatus("CANCELLED");
+                    } else {
+                        contractObject.setStatus("CONFIRMED");
+                    }
                     updateContract(contractObject);
                     await interaction.update({ content: "" })
                     await contract.deleteReply();
