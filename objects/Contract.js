@@ -25,14 +25,23 @@ class Contract {
         this.status = status;
     }
 
+    setURL(url) {
+        this.url = url;
+    }
+
     toString() {
-        contractConent = "**MINING CONTRACT**\n"
+        var minerLine = "";
+        if (this.minerID != "") {
+            minerLine = "Miner: <@" + this.minerID + ">\n"
+        }
+        const contractContent = "**MINING CONTRACT**\n"
             + "Status: " + this.status + "\n"
             + "Crafter: <@" + this.crafterID + ">\n"
-            + "Miner: <@" + this.minerID + ">\n"
+            + minerLine
             + "Resource: https://swgtracker.com/?r=" + this.resource + "\n"
             + "Quantity: " + this.quantity + "\n"
             + "CPU: " + this.cpu + "\n";
+        return contractContent;
     }
 }
 

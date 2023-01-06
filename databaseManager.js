@@ -6,12 +6,12 @@ const createContractTable = db.prepare("CREATE TABLE IF NOT EXISTS contract (cra
 createContractTable.run();
 
 function registerVendor(vendorObject) {
-    const getVendor = db.prepare("SELECT * FROM vendor WHERE owner_id='" + ownerID + "' AND name='" + name + "'");
+    const getVendor = db.prepare("SELECT * FROM vendor WHERE owner_id='" + vendorObject.ownerID + "' AND name='" + vendorObject.name + "'");
     var vendor = getVendor.get();
     if (vendor) {
-        throw ('You already own a vendor named, "' + name + '"');
+        throw ('You already own a vendor named, "' + vendorObject.name + '"');
     }
-    const registerVendor = db.prepare("INSERT INTO vendor VALUES ('" + vendorObject.ownerID + "', '" + vendorObject.name + "', '" + vendorObject + "')");
+    const registerVendor = db.prepare("INSERT INTO vendor VALUES ('" + vendorObject.ownerID + "', '" + vendorObject.name + "', '" + JSON.stringify(vendorObject) + "')");
     registerVendor.run();
 }
 
@@ -50,9 +50,27 @@ function getDiscounts() {
 }
 
 function openContract(contractObject) {
-    const openContract = db.prepare("INSERT INTO CONTRACT VALUES ('" + contractObject.crafterID + "', '', 'OPEN', '" + contractObject.url + "', '" + contractObject + "')");
+    const openContract = db.prepare("INSERT INTO CONTRACT VALUES ('" + contractObject.crafterID + "', '', 'OPEN', '" + contractObject.url + "', '" + JSON.stringify(contractObject) + "')");
     openContract.run();
 }
 
-module.exports = { registerVendor, unregisterVendor, getVendors, getDiscounts, openContract }
+function updateContract(contractObject) {
+    const updateContract = db.prepare("UPDATE contract SET contract_object='" + JSON.stringify(contractObject) + "', status ='" + contractObject.status + "' WHERE url='" + contractObject.url + "'");
+    updateContract.run();
+}
+
+function getContracts(id) {
+    const getContracts = db.prepare("SELECT contract_object FROM contract WHERE crafter_id='" + id + "' OR miner_id='" + id + "'");
+    var contracts = getContracts.all();
+    var contractsContent = "Your open contracts:\n";
+    for (var i = 0; i < contracts.length; i++) {
+        const contract = JSON.parse(contracts[i].contract_object);
+        if (contract.status != "CONFIRMED") {
+            contractsContent += contract.resource + ": " + contract.url + "\nStatus: " + contract.status + "\n\n";
+        }
+    }
+    return contractsContent;
+}
+
+module.exports = { registerVendor, unregisterVendor, getVendors, getDiscounts, openContract, updateContract, getContracts }
 
