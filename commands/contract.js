@@ -1,7 +1,8 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
-const { generateContract, acceptContract, completeContract } = require('../utilities/contractGenerator');
-const { getVendors } = require('../databaseManager');
+const { getVendors, openContract } = require('../databaseManager');
 const { v4: uuidv4 } = require('uuid');
+const Contract = require("../objects/Contract");
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,10 +21,9 @@ module.exports = {
                 .setDescription('How many credits per unit?')
                 .setRequired(true)),
     async execute(contract) {
-        var crafter = contract.user.id;
         await contract.deferReply({ ephemeral: false });
-
-        const contractContent = generateContract(contract);
+        const reply = contract.fecthReply();
+        var contractObject = new Contract(contract.user.id, "", "OPEN", reply.url, contract.options.getString("resource"), contract.options.getString("quantity"), contract.options.getString("cpu"))
 
         const acceptID = uuidv4();
         const cancelID = uuidv4();
@@ -39,11 +39,12 @@ module.exports = {
                     .setStyle(ButtonStyle.Danger)
             ]);
 
-        await contract.editReply({ content: contractContent, components: [contractButtons] });
+        await contract.editReply({ content: contractObject.toString(), components: [contractButtons] });
+
+        openContract(contractObject);
 
         const collector = contract.channel.createMessageComponentCollector({ componentType: ComponentType.Button });
 
-        var miner = "";
         const unacceptID = uuidv4();
         const vendorsID = uuidv4();
         const completeID = uuidv4();
@@ -52,11 +53,11 @@ module.exports = {
         collector.on('collect', async interaction => {
 
             if (interaction.customId === acceptID || interaction.customId === uncompleteID) {
-                if (miner === "") { miner = interaction.user.id; }
-                if (miner != interaction.user.id) {
+                if (contractObject.minerID === "") { contractObject.setMiner(interaction.user.id); }
+                if (contractObject.minerID != interaction.user.id) {
                     await interaction.reply({ content: "You cannot uncomplete a contract that you did not open.", ephemeral: true })
                 } else {
-                    const acceptedContractContent = acceptContract(contract, miner);
+                    const acceptedContractContent = contractObject.toString();
                     const acceptedContractButtons = new ActionRowBuilder()
                         .addComponents(
                             new ButtonBuilder()
@@ -79,7 +80,8 @@ module.exports = {
                 if (miner != interaction.user.id) {
                     await interaction.reply({ content: "You cannot unaccept a contract that you did not accept.", ephemeral: true })
                 } else {
-                    const contractContent = generateContract(contract);
+                    contractObject.setMiner("");
+                    const contractContent = contractObject.toString();
 
                     const contractButtons = new ActionRowBuilder()
                         .addComponents([
@@ -101,14 +103,16 @@ module.exports = {
                 await interaction.editReply({ content: vendors })
             }
             else if (interaction.customId === cancelID || interaction.customId === confirmID) {
-                if (crafter != interaction.user.id) {
+                if (contractObject.crafterID != interaction.user.id) {
                     await interaction.reply({ content: "You cannot close a contract that you did not open.", ephemeral: true })
                 } else {
                     await interaction.update({ content: "" })
                     await contract.deleteReply();
+                    await collector.stop();
+                    delete contractObject;
                 }
             } else if (interaction.customId === completeID) {
-                if (miner != interaction.user.id) {
+                if (contractObject.minerID != interaction.user.id) {
                     await interaction.reply({ content: "You cannot complete a contract that you did not accept.", ephemeral: true });
                 } else {
                     const completedContractContent = await completeContract(contract, interaction);

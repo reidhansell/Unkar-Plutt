@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { registerVendor } = require('../databaseManager');
+const Vendor = require("../objects/Vendor");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -21,7 +22,8 @@ module.exports = {
         await interaction.deferReply({ ephemeral: true });
         try {
             const vendor_discounts = interaction.options.getString("vendor_discounts") ?? "";
-            registerVendor(interaction.user.id, interaction.options.getString("vendor_name"), interaction.options.getString("vendor_location"), vendor_discounts);
+            vendorObject = new Vendor(interaction.user.id, interaction.options.getString("vendor_name"), interaction.options.getString("vendor_location"), vendor_discounts);
+            registerVendor(vendorObject);
             const response = interaction.options.getString('vendor_name') + " has been registered."
             await interaction.editReply({ content: response });
         }
