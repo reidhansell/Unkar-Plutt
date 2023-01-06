@@ -11,8 +11,11 @@ module.exports = {
                 .setRequired(true)),
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
-        unregisterVendor(interaction.user.id, interaction.options.getString("vendor_name"));
-        const response = interaction.options.getString('vendor_name') + " has been unregistered."
-        await interaction.editReply({ content: response });
+        try {
+            unregisterVendor(interaction.user.id, interaction.options.getString("vendor_name"));
+            const response = interaction.options.getString('vendor_name') + " has been unregistered."
+            await interaction.editReply({ content: response });
+        }
+        catch (error) { interaction.editReply({ content: error }) }
     },
 };

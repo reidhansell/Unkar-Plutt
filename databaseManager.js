@@ -13,6 +13,11 @@ function registerVendor(ownerID, name, location) {
 }
 
 function unregisterVendor(ownerID, name) {
+    const getVendor = db.prepare("SELECT * FROM vendor WHERE owner_id='" + ownerID + "' AND name='" + name + "'");
+    var vendor = getVendor.get();
+    if (!vendor) {
+        throw ('You do not own a vendor named, "' + name + '"');
+    }
     const unregisterVendor = db.prepare("DELETE FROM vendor WHERE owner_id='" + ownerID + "' AND name='" + name + "'");
     unregisterVendor.run();
 }
@@ -25,7 +30,7 @@ function getVendors(ownerID) {
     for (var i = 0; i < vendors.length; i++) {
         const vendor = JSON.parse(vendors[i].vendor_object);
         console.log(vendor);
-        vendorsContent += vendor.name + ": " + vendor.location;
+        vendorsContent += vendor.name + ": " + vendor.location + "\n";
     }
     return vendorsContent;
 }
