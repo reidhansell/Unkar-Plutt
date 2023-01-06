@@ -6,8 +6,13 @@ const createContractTable = db.prepare("CREATE TABLE IF NOT EXISTS contract (con
 createContractTable.run();
 
 function registerVendor(ownerID, name, location) {
-    const vendor = JSON.stringify({ "name": name, "location": location })
-    console.log(vendor);
+    const getVendor = db.prepare("SELECT * FROM vendor WHERE owner_id='" + ownerID + "' AND name='" + name + "'");
+    var vendor = getVendor.get();
+    if (!vendor) {
+        throw ('You already own a vendor named, "' + name + '"');
+    }
+    const newVendor = JSON.stringify({ "name": name, "location": location })
+    console.log(newVendor);
     const registerVendor = db.prepare("INSERT INTO vendor VALUES ('" + ownerID + "', '" + name + "', '" + vendor + "')");
     registerVendor.run();
 }

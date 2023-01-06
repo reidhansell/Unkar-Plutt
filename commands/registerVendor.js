@@ -15,8 +15,13 @@ module.exports = {
                 .setRequired(true)),
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
-        registerVendor(interaction.user.id, interaction.options.getString("vendor_name"), interaction.options.getString("vendor_location"));
-        const response = interaction.options.getString('vendor_name') + " has been registered."
-        await interaction.editReply({ content: response });
+        try {
+            registerVendor(interaction.user.id, interaction.options.getString("vendor_name"), interaction.options.getString("vendor_location"));
+            const response = interaction.options.getString('vendor_name') + " has been registered."
+            await interaction.editReply({ content: response });
+        }
+        catch (error) {
+            await interaction.editReply({ content: error });
+        }
     },
 };

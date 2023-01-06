@@ -16,6 +16,6 @@ module.exports = {
             const response = interaction.options.getString('vendor_name') + " has been unregistered."
             await interaction.editReply({ content: response });
         }
-        catch (error) { interaction.editReply({ content: error }) }
+        catch (error) { await interaction.editReply({ content: error }) }
     },
 };
