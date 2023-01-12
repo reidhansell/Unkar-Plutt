@@ -1,5 +1,5 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
-const { getVendors, openContract, updateContract } = require('../databaseManager');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { openContract } = require('../databaseManager');
 const { v4: uuidv4 } = require('uuid');
 const Contract = require("../objects/Contract");
 
@@ -23,19 +23,37 @@ module.exports = {
     async execute(contract) {
         await contract.reply({ ephemeral: false, content: "Generating a contract..." });
         var url = ""
-        const reply = await contract.fetchReply().then(reply => url = reply.url);
-        var contractObject = new Contract(contract.user.id, "", "OPEN", url, contract.options.getString("resource"), contract.options.getString("quantity"), contract.options.getString("cpu"))
+        var message_id = ""
+        var channel_id = ""
+        await contract.fetchReply().then(reply => { url = reply.url; reply_id = reply.id; channel_id = reply.channelId });
 
-        const acceptID = uuidv4();
-        const cancelID = uuidv4();
+        var contractObject = new Contract({
+            "crafter_id": contract.user.id,
+            "miner_id": "",
+            "status": "OPEN",
+            "url": url,
+            "resource": contract.options.getString("resource"),
+            "quantity": contract.options.getString("quantity"),
+            "cpu": contract.options.getString("cpu"),
+            "message_id": message_id,
+            "channel_id": channel_id,
+            "accept_id": uuidv4(),
+            "cancel_id": uuidv4(),
+            "unaccept_id": uuidv4(),
+            "vendors_id": uuidv4(),
+            "complete_id": uuidv4(),
+            "uncomplete_id": uuidv4(),
+            "confirm_id": uuidv4(),
+        })
+
         const contractButtons = new ActionRowBuilder()
             .addComponents([
                 new ButtonBuilder()
-                    .setCustomId(acceptID)
+                    .setCustomId(contractObject.accept_id)
                     .setLabel('Accept')
                     .setStyle(ButtonStyle.Primary),
                 new ButtonBuilder()
-                    .setCustomId(cancelID)
+                    .setCustomId(contractObject.cancel_id)
                     .setLabel('Cancel')
                     .setStyle(ButtonStyle.Danger)
             ]);
@@ -43,107 +61,6 @@ module.exports = {
         await contract.editReply({ content: contractObject.toString(), components: [contractButtons] });
 
         openContract(contractObject);
-
-        const collector = contract.channel.createMessageComponentCollector({ componentType: ComponentType.Button });
-
-        const unacceptID = uuidv4();
-        const vendorsID = uuidv4();
-        const completeID = uuidv4();
-        const uncompleteID = uuidv4();
-        const confirmID = uuidv4();
-        collector.on('collect', async interaction => {
-
-            if (interaction.customId === acceptID || interaction.customId === uncompleteID) {
-                if (contractObject.minerID === "") { contractObject.setMiner(interaction.user.id); }
-                if (contractObject.minerID != interaction.user.id) {
-                    await interaction.reply({ content: "You cannot uncomplete a contract that you did not open.", ephemeral: true })
-                } else {
-                    contractObject.setStatus('IN PROGRESS');
-                    updateContract(contractObject);
-                    const acceptedContractContent = contractObject.toString();
-                    const acceptedContractButtons = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId(vendorsID)
-                                .setLabel("Vendors")
-                                .setStyle(ButtonStyle.Primary),
-                            new ButtonBuilder()
-                                .setCustomId(completeID)
-                                .setLabel('Complete')
-                                .setStyle(ButtonStyle.Success),
-                            new ButtonBuilder()
-                                .setCustomId(unacceptID)
-                                .setLabel('Unaccept')
-                                .setStyle(ButtonStyle.Danger),
-                        );
-                    await interaction.update({ content: acceptedContractContent, components: [acceptedContractButtons] });
-                }
-            }
-            else if (interaction.customId === unacceptID) {
-                if (contractObject.minerID != interaction.user.id) {
-                    await interaction.reply({ content: "You cannot unaccept a contract that you did not accept.", ephemeral: true })
-                } else {
-                    contractObject.setMiner("");
-                    updateContract(contractObject);
-                    const contractContent = contractObject.toString();
-
-                    const contractButtons = new ActionRowBuilder()
-                        .addComponents([
-                            new ButtonBuilder()
-                                .setCustomId(acceptID)
-                                .setLabel('Accept')
-                                .setStyle(ButtonStyle.Primary),
-                            new ButtonBuilder()
-                                .setCustomId(cancelID)
-                                .setLabel('Cancel')
-                                .setStyle(ButtonStyle.Danger)
-                        ]);
-
-                    await interaction.update({ content: contractContent, components: [contractButtons] });
-                }
-            } else if (interaction.customId === vendorsID) {
-                await interaction.deferReply({ ephemeral: true });
-                const vendors = await getVendors(contract.user.id);
-                await interaction.editReply({ content: vendors })
-            }
-            else if (interaction.customId === cancelID || interaction.customId === confirmID) {
-                if (contractObject.crafterID != interaction.user.id) {
-                    await interaction.reply({ content: "You cannot close a contract that you did not open.", ephemeral: true })
-                } else {
-                    if (interaction.customId === cancelID) {
-                        contractObject.setStatus("CANCELLED");
-                    } else {
-                        contractObject.setStatus("CONFIRMED");
-                    }
-                    updateContract(contractObject);
-                    await interaction.update({ content: "" })
-                    await contract.deleteReply();
-                    await collector.stop();
-                    delete contractObject;
-                }
-            } else if (interaction.customId === completeID) {
-                if (contractObject.minerID != interaction.user.id) {
-                    await interaction.reply({ content: "You cannot complete a contract that you did not accept.", ephemeral: true });
-                } else {
-                    contractObject.setStatus('COMPLETE');
-                    updateContract(contractObject);
-                    const completedContractContent = contractObject.toString();
-                    const completedContractButtons = new ActionRowBuilder()
-                        .addComponents([
-                            new ButtonBuilder()
-                                .setCustomId(confirmID)
-                                .setLabel('Confirm')
-                                .setStyle(ButtonStyle.Success),
-                            new ButtonBuilder()
-                                .setCustomId(uncompleteID)
-                                .setLabel('Uncomplete')
-                                .setStyle(ButtonStyle.Danger),
-
-                        ]);
-                    await interaction.update({ content: completedContractContent, components: [completedContractButtons] })
-                }
-            }
-        });
 
     },
 
