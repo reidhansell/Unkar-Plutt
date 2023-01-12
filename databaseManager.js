@@ -73,11 +73,7 @@ function openContract(contractObject) {
 }
 
 function updateContract(contractObject) {
-<<<<<<< HEAD
-    const updateContract = db.prepare("UPDATE contract SET contract_object='" + JSON.stringify(contractObject) + "', status ='" + contractObject.status + "', miner_id ='" + contractObject.miner_id + "' WHERE url='" + contractObject.url + "'");
-=======
-    const updateContract = db.prepare("UPDATE contract SET contract_object='" + JSON.stringify(contractObject) + "', status ='" + contractObject.status + "', miner_id ='" + contractObject.miner_id + "' WHERE url = '" + contractObject.url + "'");
->>>>>>> 699c1f48dda98747e5fd9b899594526e4c9ee520
+    const updateContract = db.prepare("UPDATE contract SET contract_object='" + JSON.stringify(contractObject) + "', status ='" + contractObject.status + "', miner_id ='" + contractObject.miner_id + "' WHERE url ='" + contractObject.url + "'");
     updateContract.run();
 }
 
