@@ -1,8 +1,9 @@
 const db = require('better-sqlite3')('shade.db');
+const Contract = require("./objects/Contract");
 
 const createVendorTable = db.prepare("CREATE TABLE IF NOT EXISTS vendor (owner_id TEXT, name TEXT, vendor_object JSON)");
 createVendorTable.run();
-const createContractTable = db.prepare("CREATE TABLE IF NOT EXISTS contract (crafter_id TEXT, miner_id TEXT, status TEXT, url TEXT, contract_object JSON)");
+const createContractTable = db.prepare("CREATE TABLE IF NOT EXISTS contract (crafter_id TEXT, miner_id TEXT, status TEXT, url TEXT, message_id TEXT, channel_id TEXT, accept_id TEXT, cancel_id TEXT, unaccept_id TEXT, vendors_id TEXT, complete_id TEXT, uncomplete_id TEXT, confirm_id TEXT, contract_object JSON)");
 createContractTable.run();
 
 function registerVendor(vendorObject) {
@@ -50,12 +51,27 @@ function getDiscounts() {
 }
 
 function openContract(contractObject) {
-    const openContract = db.prepare("INSERT INTO CONTRACT VALUES ('" + contractObject.crafterID + "', '', 'OPEN', '" + contractObject.url + "', '" + JSON.stringify(contractObject) + "')");
+    const openContract = db.prepare("INSERT INTO contract VALUES ('" +
+        contractObject.crafter_id + "', '" +
+        contractObject.miner_id + "', '" +
+        contractObject.status + "', '" +
+        contractObject.url + "', '" +
+        //Resource, quantity, and cpu are not columns because they do not help fetch data
+        contractObject.message_id + "', '" +
+        contractObject.channel_id + "', '" +
+        contractObject.accept_id + "', '" +
+        contractObject.cancel_id + "', '" +
+        contractObject.unaccept_id + "', '" +
+        contractObject.vendors_id + "', '" +
+        contractObject.complete_id + "', '" +
+        contractObject.uncomplete_id + "', '" +
+        contractObject.confirm_id + "', '" +
+        JSON.stringify(contractObject) + "')");
     openContract.run();
 }
 
 function updateContract(contractObject) {
-    const updateContract = db.prepare("UPDATE contract SET contract_object='" + JSON.stringify(contractObject) + "', status ='" + contractObject.status + "' WHERE url='" + contractObject.url + "'");
+    const updateContract = db.prepare("UPDATE contract SET contract_object='" + JSON.stringify(contractObject) + "', status ='" + contractObject.status + "', miner_id ='" + contractObject.miner_id + "' WHERE url = '" + contractObject.url + "'");
     updateContract.run();
 }
 
@@ -72,5 +88,11 @@ function getContracts(id) {
     return contractsContent;
 }
 
-module.exports = { registerVendor, unregisterVendor, getVendors, getDiscounts, openContract, updateContract, getContracts }
+function getContractByButton(button_id) {
+    const getContract = db.prepare("SELECT contract_object FROM contract WHERE accept_id='" + button_id + "' OR cancel_id='" + button_id + "' OR unaccept_id='" + button_id + "' OR vendors_id='" + button_id + "' OR complete_id='" + button_id + "' OR uncomplete_id='" + button_id + "' OR confirm_id='" + button_id + "'");
+    var contract = new Contract(JSON.parse(getContract.get().contract_object));
+    return contract;
+}
+
+module.exports = { registerVendor, unregisterVendor, getVendors, getDiscounts, openContract, updateContract, getContracts, getContractByButton }
 
