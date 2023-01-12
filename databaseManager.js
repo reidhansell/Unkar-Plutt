@@ -2,6 +2,8 @@ const db = require('better-sqlite3')('shade.db');
 
 const createVendorTable = db.prepare("CREATE TABLE IF NOT EXISTS vendor (owner_id TEXT, name TEXT, vendor_object JSON)");
 createVendorTable.run();
+//const dropContractTable = db.prepare("DROP TABLE contract");
+//dropContractTable.run();
 const createContractTable = db.prepare("CREATE TABLE IF NOT EXISTS contract (crafter_id TEXT, miner_id TEXT, status TEXT, url TEXT, contract_object JSON)");
 createContractTable.run();
 
@@ -55,7 +57,7 @@ function openContract(contractObject) {
 }
 
 function updateContract(contractObject) {
-    const updateContract = db.prepare("UPDATE contract SET contract_object='" + JSON.stringify(contractObject) + "', status ='" + contractObject.status + "' WHERE url='" + contractObject.url + "'");
+    const updateContract = db.prepare("UPDATE contract SET contract_object='" + JSON.stringify(contractObject) + "', status ='" + contractObject.status + "', miner_id ='" + contractObject.miner_id + "' WHERE url='" + contractObject.url + "'");
     updateContract.run();
 }
 
