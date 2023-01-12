@@ -3,8 +3,6 @@ const Contract = require("./objects/Contract");
 
 const createVendorTable = db.prepare("CREATE TABLE IF NOT EXISTS vendor (owner_id TEXT, name TEXT, vendor_object JSON)");
 createVendorTable.run();
-const dropContractTable = db.prepare("DROP TABLE contract");
-dropContractTable.run();
 const createContractTable = db.prepare("CREATE TABLE IF NOT EXISTS contract (crafter_id TEXT, miner_id TEXT, status TEXT, url TEXT, message_id TEXT, channel_id TEXT, accept_id TEXT, cancel_id TEXT, unaccept_id TEXT, vendors_id TEXT, complete_id TEXT, uncomplete_id TEXT, confirm_id TEXT, contract_object JSON)");
 createContractTable.run();
 
