@@ -111,5 +111,16 @@ function toggleNotifications(userID) {
     }
 }
 
-module.exports = { registerVendor, unregisterVendor, getVendors, getDiscounts, openContract, updateContract, getContracts, getContractByButton, toggleNotifications }
+function checkNotifications(userID) {
+    const getUser = db.prepare("SELECT * FROM notification WHERE user_id='" + userID + "'");
+    var user = getUser.get();
+    if (!user) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}
+
+module.exports = { registerVendor, unregisterVendor, getVendors, getDiscounts, openContract, updateContract, getContracts, getContractByButton, toggleNotifications, checkNotifications }
 
