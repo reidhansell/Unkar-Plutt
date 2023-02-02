@@ -97,7 +97,7 @@ function getContractByButton(button_id) {
 }
 
 function toggleNotifications(userID) {
-    const getUser = db.prepare("SELECT * FROM notification WHERE owner_id='" + userID + "'");
+    const getUser = db.prepare("SELECT * FROM notification WHERE user_id='" + userID + "'");
     var user = getUser.get();
     if (!user) {
         const toggleNotifications = db.prepare("INSERT INTO notification VALUES ('" + userID + "')");

@@ -1,7 +1,7 @@
 // Require the necessary discord.js classes
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, GatewayIntentBits, Collection, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, User } = require('discord.js');
 const { token, guildId } = require('./config.json');
 const { getVendors, updateContract, getContractByButton } = require('./databaseManager');
 
@@ -76,6 +76,9 @@ client.on('ready', () => {
                                 .setStyle(ButtonStyle.Danger),
                         );
                     await interaction.update({ content: acceptedContractContent, components: [acceptedContractButtons] });
+                    const crafter = await client.users.fetch(contractObject.crafter_id);
+                    const crafterDM = await crafter.createDM();
+                    crafterDM.send("Your " + contractObject.resource + " contract is now: " + contractObject.status + "\nURL: " + contractObject.url);
                 }
             }
             else if (interaction.customId === contractObject.unaccept_id) {
