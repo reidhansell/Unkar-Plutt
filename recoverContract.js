@@ -47,11 +47,10 @@ client.on('ready', async () => {
 
     const guild = client.guilds.cache.get(guildId);
     var textChannels = guild.channels.cache;
-    textChannels.sweep(channel => channel.name != "testing"); //change this
+    textChannels.sweep(channel => channel.name != /*Enter channel name here*/"");
     textChannels = textChannels.values();
     for (const channel of textChannels) {
-        //const messageIDs = ["1070581022988701746", "1070581014193254412", "1070581005817221141", "1070580995604107364", "1070499037817610301", "1069451015847424010", "1069433322251493386"];
-        const message_ids = ["1070663083980230668"];
+        const message_ids = [/*Enter IDs here*/];
         for (const message_id of message_ids) {
             var message = await channel.messages.fetch(message_id);
             const lines = message.content.split(/\r?\n/);
