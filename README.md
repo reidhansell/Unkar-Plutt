@@ -23,6 +23,9 @@ CANCELLED <- OPEN <-> IN PROGRESS <-> COMPLETE -> CONFIRMED
 ### /my_contracts
 See a list of your open contracts along with their current status and a link to the original post!
 
+### /toggle_notifications
+Toggle notifications for contract status changes!
+
 ## More
 
 ### This bot will be maintained until I quit playing SWG
