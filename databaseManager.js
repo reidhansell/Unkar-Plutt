@@ -96,5 +96,20 @@ function getContractByButton(button_id) {
     return contract;
 }
 
-module.exports = { registerVendor, unregisterVendor, getVendors, getDiscounts, openContract, updateContract, getContracts, getContractByButton }
+function toggleNotifications(userID) {
+    const getUser = db.prepare("SELECT * FROM notification WHERE owner_id='" + userID + "'");
+    var user = getUser.get();
+    if (!user) {
+        const toggleNotifications = db.prepare("INSERT INTO notification VALUES ('" + userID + "')");
+        toggleNotifications.run();
+        return true;
+    }
+    else {
+        const toggleNotifications = db.prepare("DELETE FROM notification WHERE user_id='" + userID + "'");
+        toggleNotifications.run();
+        return false;
+    }
+}
+
+module.exports = { registerVendor, unregisterVendor, getVendors, getDiscounts, openContract, updateContract, getContracts, getContractByButton, toggleNotifications }
 
