@@ -103,6 +103,9 @@ client.on('ready', () => {
                         ]);
 
                     await interaction.update({ content: contractContent, components: [contractButtons] });
+                    const crafter = await client.users.fetch(contractObject.crafter_id);
+                    const crafterDM = await crafter.createDM();
+                    crafterDM.send("Your " + contractObject.resource + " contract is now: " + contractObject.status + "\nURL: " + contractObject.url);
                 }
             } else if (interaction.customId === contractObject.vendors_id) {
                 await interaction.deferReply({ ephemeral: true });
@@ -121,6 +124,11 @@ client.on('ready', () => {
                     updateContract(contractObject);
                     await interaction.update({ content: "" })
                     await interaction.deleteReply();
+                    if (interaction.customId === contractObject.confirm_id) {
+                        const miner = await client.users.fetch(contractObject.miner_id);
+                        const minerDM = await miner.createDM();
+                        minerDM.send("Your " + contractObject.resource + " contract is now: " + contractObject.status + "\nURL: REMOVED");
+                    }
                     delete contractObject;
                 }
             } else if (interaction.customId === contractObject.complete_id) {
@@ -142,7 +150,10 @@ client.on('ready', () => {
                                 .setStyle(ButtonStyle.Danger),
 
                         ]);
-                    await interaction.update({ content: completedContractContent, components: [completedContractButtons] })
+                    await interaction.update({ content: completedContractContent, components: [completedContractButtons] });
+                    const crafter = await client.users.fetch(contractObject.crafter_id);
+                    const crafterDM = await crafter.createDM();
+                    crafterDM.send("Your " + contractObject.resource + " contract is now: " + contractObject.status + "\nURL: " + contractObject.url);
                 }
             }
         }
