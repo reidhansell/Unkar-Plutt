@@ -5,6 +5,8 @@ const createVendorTable = db.prepare("CREATE TABLE IF NOT EXISTS vendor (owner_i
 createVendorTable.run();
 const createContractTable = db.prepare("CREATE TABLE IF NOT EXISTS contract (crafter_id TEXT, miner_id TEXT, status TEXT, url TEXT, message_id TEXT, channel_id TEXT, accept_id TEXT, cancel_id TEXT, unaccept_id TEXT, vendors_id TEXT, complete_id TEXT, uncomplete_id TEXT, confirm_id TEXT, contract_object JSON)");
 createContractTable.run();
+const createNotificationTable = db.prepare("CREATE TABLE IF NOT EXISTS notification (user_id TEXT)");
+createNotificationTable.run();
 
 function registerVendor(vendorObject) {
     const getVendor = db.prepare("SELECT * FROM vendor WHERE owner_id='" + vendorObject.ownerID + "' AND name='" + vendorObject.name + "'");
