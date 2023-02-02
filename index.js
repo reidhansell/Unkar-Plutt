@@ -1,9 +1,9 @@
 // Require the necessary discord.js classes
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, GatewayIntentBits, Collection, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, User } = require('discord.js');
 const { token, guildId } = require('./config.json');
-const { getVendors, updateContract, getContractByButton } = require('./databaseManager');
+const { getVendors, updateContract, getContractByButton, checkNotifications } = require('./databaseManager');
 
 
 // Create a new client instance
@@ -76,6 +76,11 @@ client.on('ready', () => {
                                 .setStyle(ButtonStyle.Danger),
                         );
                     await interaction.update({ content: acceptedContractContent, components: [acceptedContractButtons] });
+                    if (checkNotifications(contractObject.crafter_id)) {
+                        const crafter = await client.users.fetch(contractObject.crafter_id);
+                        const crafterDM = await crafter.createDM();
+                        crafterDM.send("Your " + contractObject.resource + " contract is now: " + contractObject.status + "\nURL: " + contractObject.url);
+                    }
                 }
             }
             else if (interaction.customId === contractObject.unaccept_id) {
@@ -100,6 +105,11 @@ client.on('ready', () => {
                         ]);
 
                     await interaction.update({ content: contractContent, components: [contractButtons] });
+                    if (checkNotifications(contractObject.crafter_id)) {
+                        const crafter = await client.users.fetch(contractObject.crafter_id);
+                        const crafterDM = await crafter.createDM();
+                        crafterDM.send("Your " + contractObject.resource + " contract is now: " + contractObject.status + "\nURL: " + contractObject.url);
+                    }
                 }
             } else if (interaction.customId === contractObject.vendors_id) {
                 await interaction.deferReply({ ephemeral: true });
@@ -118,6 +128,13 @@ client.on('ready', () => {
                     updateContract(contractObject);
                     await interaction.update({ content: "" })
                     await interaction.deleteReply();
+                    if (interaction.customId === contractObject.confirm_id) {
+                        if (checkNotifications(contractObject.miner_id)) {
+                            const miner = await client.users.fetch(contractObject.miner_id);
+                            const minerDM = await miner.createDM();
+                            minerDM.send("Your " + contractObject.resource + " contract is now: " + contractObject.status + "\nURL: REMOVED");
+                        }
+                    }
                     delete contractObject;
                 }
             } else if (interaction.customId === contractObject.complete_id) {
@@ -139,7 +156,12 @@ client.on('ready', () => {
                                 .setStyle(ButtonStyle.Danger),
 
                         ]);
-                    await interaction.update({ content: completedContractContent, components: [completedContractButtons] })
+                    await interaction.update({ content: completedContractContent, components: [completedContractButtons] });
+                    if (checkNotifications(contractObject.crafter_id)) {
+                        const crafter = await client.users.fetch(contractObject.crafter_id);
+                        const crafterDM = await crafter.createDM();
+                        crafterDM.send("Your " + contractObject.resource + " contract is now: " + contractObject.status + "\nURL: " + contractObject.url);
+                    }
                 }
             }
         }
