@@ -9,7 +9,7 @@ module.exports = {
         const response = "**Commands:**\n"
             + "/contract {name} {quantity} {cpu}\n"
             + "/my_contracts\n"
-            + "/toggle_notifications\n"
+            + "/toggle_notifications (default is OFF)\n"
             + "/register_vendor {name} {location} {(optional) discounts}\n"
             + "/unregister_vendor {name}\n"
             + "/discounts\n"
