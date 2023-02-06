@@ -25,6 +25,10 @@ module.exports = {
         var url = ""
         var message_id = ""
         var channel_id = ""
+        var resource = contract.options.getString("resource");
+        if (resource.indexOf("=") != -1) {
+            resource = resource.substring(resource.indexOf("=") + 1);
+        }
         await contract.fetchReply().then(reply => { url = reply.url; reply_id = reply.id; channel_id = reply.channelId });
 
         var contractObject = new Contract({
@@ -32,7 +36,7 @@ module.exports = {
             "miner_id": "",
             "status": "OPEN",
             "url": url,
-            "resource": contract.options.getString("resource"),
+            "resource": resource,
             "quantity": contract.options.getString("quantity"),
             "cpu": contract.options.getString("cpu"),
             "message_id": message_id,
