@@ -39,19 +39,6 @@ function getVendors(ownerID) {
     return vendorsContent;
 }
 
-function getDiscounts() {
-    const getVendors = db.prepare("SELECT vendor_object FROM vendor");
-    var vendors = getVendors.all();
-    var vendorsContent = "Guild discounts:\n";
-    for (var i = 0; i < vendors.length; i++) {
-        const vendor = JSON.parse(vendors[i].vendor_object);
-        if (vendor.discounts != "") {
-            vendorsContent += vendor.name + ": " + vendor.discounts + "\nLocation: " + vendor.location + "\n\n";
-        }
-    }
-    return vendorsContent;
-}
-
 function openContract(contractObject) {
     const openContract = db.prepare("INSERT INTO contract VALUES ('" +
         contractObject.crafter_id + "', '" +
@@ -122,5 +109,5 @@ function checkNotifications(userID) {
     }
 }
 
-module.exports = { registerVendor, unregisterVendor, getVendors, getDiscounts, openContract, updateContract, getContracts, getContractByButton, toggleNotifications, checkNotifications }
+module.exports = { registerVendor, unregisterVendor, getVendors, openContract, updateContract, getContracts, getContractByButton, toggleNotifications, checkNotifications }
 

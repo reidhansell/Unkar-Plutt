@@ -6,11 +6,11 @@ This bot will enable the following commands in your Discord server (press TAB to
 
 ## Commands
 
-### /register_vendor {name} {location} {(optional) discounts}
-This command registers your vendor as a drop-off location, and adds it to the /discounts command (only if you supply a discount)
+### /contract_help
+Get help with contract commands!
 
-### /discounts
-This command lists all vendors in the guild with discounts!
+### /register_vendor {name} {location}
+This command registers your vendor as a drop-off location
 
 ### /unregister_vendor {name}
 This command unregisters a vendor with the provided name (only works if the vendor is under your Discord ID)
