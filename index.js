@@ -46,7 +46,6 @@ client.on('ready', () => {
     guilds = guilds.values();
     var textChannels = []
     for (const guild of guilds) {
-        guild.commands.set([]); // Remove this
         var guildTextChannels = guild.channels.cache;
         guildTextChannels.sweep(channel => channel.type != 0);
         guildTextChannels = guildTextChannels.values();

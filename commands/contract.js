@@ -11,21 +11,24 @@ module.exports = {
         .addStringOption(option =>
             option.setName('resource')
                 .setDescription('What resource do you want to buy?')
-                .setRequired(true))
+                .setRequired(true)
+                .setMaxLength(200))
         .addStringOption(option =>
             option.setName('quantity')
                 .setDescription('How many units of said resource?')
-                .setRequired(true))
+                .setRequired(true)
+                .setMaxLength(200))
         .addStringOption(option =>
             option.setName('cpu')
                 .setDescription('How many credits per unit?')
-                .setRequired(true)),
+                .setRequired(true)
+                .setMaxLength(200)),
     async execute(contract) {
         await contract.reply({ ephemeral: false, content: "Generating a contract..." });
         var url = ""
         var message_id = ""
         var channel_id = ""
-        var resource = contract.options.getString("resource");
+        var resource = contract.options.getString("resource").replace(/[^a-zA-Z0-9 ]/g, '').trim();
         if (resource.indexOf("=") != -1) {
             resource = resource.substring(resource.indexOf("=") + 1);
         }
@@ -37,8 +40,8 @@ module.exports = {
             "status": "OPEN",
             "url": url,
             "resource": resource,
-            "quantity": contract.options.getString("quantity"),
-            "cpu": contract.options.getString("cpu"),
+            "quantity": contract.options.getString("quantity").replace(/[^a-zA-Z0-9 ]/g, '').trim(),
+            "cpu": contract.options.getString("cpu").replace(/[^a-zA-Z0-9 ]/g, '').trim(),
             "message_id": message_id,
             "channel_id": channel_id,
             "accept_id": uuidv4(),
