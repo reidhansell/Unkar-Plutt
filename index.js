@@ -121,8 +121,10 @@ client.on('ready', () => {
                 }
             } else if (interaction.customId === contractObject.vendors_id) {
                 await interaction.deferReply({ ephemeral: true });
+                await interaction.deleteReply();
                 const vendors = await getVendors(contractObject.crafter_id);
-                await interaction.editReply({ content: vendors })
+                const minerDM = await interaction.user.createDM();
+                minerDM.send(vendors);
             }
             else if (interaction.customId === contractObject.cancel_id || interaction.customId === contractObject.confirm_id) {
                 if (contractObject.crafter_id != interaction.user.id) {
