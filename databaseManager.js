@@ -10,7 +10,7 @@ createNotificationTable.run();
 
 function registerVendor(vendorObject) {
     const getVendor = db.prepare("SELECT * FROM vendor WHERE owner_id='" + vendorObject.ownerID + "' AND name='" + vendorObject.name + "'");
-    var vendor = getVendor.get();
+    let vendor = getVendor.get();
     if (vendor) {
         throw ('You already own a vendor named, "' + vendorObject.name + '"');
     }
@@ -20,7 +20,7 @@ function registerVendor(vendorObject) {
 
 function unregisterVendor(ownerID, name) {
     const getVendor = db.prepare("SELECT * FROM vendor WHERE owner_id='" + ownerID + "' AND name='" + name + "'");
-    var vendor = getVendor.get();
+    let vendor = getVendor.get();
     if (!vendor) {
         throw ('You do not own a vendor named, "' + name + '"');
     }
@@ -30,9 +30,9 @@ function unregisterVendor(ownerID, name) {
 
 function getVendors(ownerID) {
     const getVendors = db.prepare("SELECT vendor_object FROM vendor WHERE owner_id='" + ownerID + "'");
-    var vendors = getVendors.all();
-    var vendorsContent = "<@" + ownerID + ">'s vendors:\n";
-    for (var i = 0; i < vendors.length; i++) {
+    let vendors = getVendors.all();
+    let vendorsContent = "<@" + ownerID + ">'s vendors:\n";
+    for (let i = 0; i < vendors.length; i++) {
         const vendor = JSON.parse(vendors[i].vendor_object);
         vendorsContent += vendor.name + ": " + vendor.location + "\n";
     }
@@ -64,11 +64,16 @@ function updateContract(contractObject) {
     updateContract.run();
 }
 
+function updateURL(contractObject, oldURL) {
+    const updateContract = db.prepare("UPDATE contract SET contract_object='" + JSON.stringify(contractObject) + "', status ='" + contractObject.status + "', miner_id ='" + contractObject.miner_id + "', url ='" + contractObject.url + "', message_id = '" + contractObject.message_id + "', channel_id = '" + contractObject.channel_id + "' WHERE url ='" + oldURL + "'");
+    updateContract.run();
+}
+
 function getContracts(id) {
     const getContracts = db.prepare("SELECT contract_object FROM contract WHERE crafter_id='" + id + "' OR miner_id='" + id + "'");
-    var contracts = getContracts.all();
-    var contractsContent = "Your open contracts:\n";
-    for (var i = 0; i < contracts.length; i++) {
+    let contracts = getContracts.all();
+    let contractsContent = "Your open contracts:\n";
+    for (let i = 0; i < contracts.length; i++) {
         const contract = JSON.parse(contracts[i].contract_object);
         if (contract.status != "CONFIRMED" && contract.status != "CANCELLED") {
             contractsContent += contract.resource + ": " + contract.url + "\nStatus: " + contract.status + "\n\n";
@@ -77,15 +82,28 @@ function getContracts(id) {
     return contractsContent;
 }
 
+function getContractObjects(id) {
+    const getContracts = db.prepare("SELECT contract_object FROM contract WHERE crafter_id='" + id + "' OR miner_id='" + id + "'");
+    let contracts = getContracts.all();
+    let parsedContracts = [];
+    for (let i = 0; i < contracts.length; i++) {
+        const contract = JSON.parse(contracts[i].contract_object);
+        if (contract.status != "CONFIRMED" && contract.status != "CANCELLED") {
+            parsedContracts.push(new Contract(contract));
+        }
+    }
+    return parsedContracts;
+}
+
 function getContractByButton(button_id) {
     const getContract = db.prepare("SELECT contract_object FROM contract WHERE accept_id='" + button_id + "' OR cancel_id='" + button_id + "' OR unaccept_id='" + button_id + "' OR vendors_id='" + button_id + "' OR complete_id='" + button_id + "' OR uncomplete_id='" + button_id + "' OR confirm_id='" + button_id + "'");
-    var contract = new Contract(JSON.parse(getContract.get().contract_object));
+    let contract = new Contract(JSON.parse(getContract.get().contract_object));
     return contract;
 }
 
 function toggleNotifications(userID) {
     const getUser = db.prepare("SELECT * FROM notification WHERE user_id='" + userID + "'");
-    var user = getUser.get();
+    let user = getUser.get();
     if (!user) {
         const toggleNotifications = db.prepare("INSERT INTO notification VALUES ('" + userID + "')");
         toggleNotifications.run();
@@ -100,7 +118,7 @@ function toggleNotifications(userID) {
 
 function checkNotifications(userID) {
     const getUser = db.prepare("SELECT * FROM notification WHERE user_id='" + userID + "'");
-    var user = getUser.get();
+    let user = getUser.get();
     if (!user) {
         return false;
     }
@@ -109,5 +127,5 @@ function checkNotifications(userID) {
     }
 }
 
-module.exports = { registerVendor, unregisterVendor, getVendors, openContract, updateContract, getContracts, getContractByButton, toggleNotifications, checkNotifications }
+module.exports = { registerVendor, unregisterVendor, getVendors, openContract, updateContract, getContracts, getContractByButton, toggleNotifications, checkNotifications, getContractObjects, updateURL }
 

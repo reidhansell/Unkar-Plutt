@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { getContractObjects, updateURL } = require('../databaseManager');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -6,7 +7,20 @@ module.exports = {
         .setDescription('Reprint your contracts!'),
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
-
+        let contractObjects = getContractObjects(interaction.user.id);
+        for (let i = 0; i < contractObjects.length; i++) {
+            if (contractObjects[i].message_id && contractObjects[i].channel_id) {
+                let channel = await interaction.guild.channels.fetch(contractObjects[i].channel_id);
+                let message = await channel.messages.fetch(contractObjects[i].message_id);
+                message.delete();
+            }
+            let oldURL = contractObjects[i].url;
+            let message = await interaction.channel.send({ content: contractObjects[i].toString(), components: [contractObjects[i].toButtons()] });
+            contractObjects[i].url = message.url;
+            contractObjects[i].message_id = message.id;
+            contractObjects[i].channel_id = interaction.channel.id;
+            updateURL(contractObjects[i], oldURL);
+        }
         await interaction.deleteReply();
     },
 };
