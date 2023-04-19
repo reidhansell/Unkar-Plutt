@@ -28,10 +28,11 @@ module.exports = {
         var url = ""
         var message_id = ""
         var channel_id = ""
-        var resource = contract.options.getString("resource").replace(/[^a-zA-Z0-9 ]/g, '').trim();
+        var resource = contract.options.getString("resource").trim();
         if (resource.indexOf("=") != -1) {
             resource = resource.substring(resource.indexOf("=") + 1);
         }
+        resource = resource.replace(/[^a-zA-Z0-9 ]/g, '').trim();
         await contract.fetchReply().then(reply => { url = reply.url; reply_id = reply.id; channel_id = reply.channelId });
 
         var contractObject = new Contract({
