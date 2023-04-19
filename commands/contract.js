@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const { openContract } = require('../databaseManager');
 const { v4: uuidv4 } = require('uuid');
 const Contract = require("../objects/Contract");
@@ -33,7 +33,7 @@ module.exports = {
             resource = resource.substring(resource.indexOf("=") + 1);
         }
         resource = resource.replace(/[^a-zA-Z0-9 ]/g, '').trim();
-        await contract.fetchReply().then(reply => { url = reply.url; reply_id = reply.id; channel_id = reply.channelId });
+        await contract.fetchReply().then(reply => { url = reply.url; message_id = reply.id; channel_id = reply.channel.id });
 
         var contractObject = new Contract({
             "crafter_id": contract.user.id,
@@ -54,19 +54,7 @@ module.exports = {
             "confirm_id": uuidv4(),
         })
 
-        const contractButtons = new ActionRowBuilder()
-            .addComponents([
-                new ButtonBuilder()
-                    .setCustomId(contractObject.accept_id)
-                    .setLabel('Accept')
-                    .setStyle(ButtonStyle.Primary),
-                new ButtonBuilder()
-                    .setCustomId(contractObject.cancel_id)
-                    .setLabel('Cancel')
-                    .setStyle(ButtonStyle.Danger)
-            ]);
-
-        await contract.editReply({ content: contractObject.toString(), components: [contractButtons] });
+        await contract.editReply({ content: contractObject.toString(), components: [contractObject.toButtons()] });
 
         openContract(contractObject);
 

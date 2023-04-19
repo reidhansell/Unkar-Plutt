@@ -1,3 +1,4 @@
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 class Contract {
     crafter_id = "";
     miner_id = "";
@@ -62,6 +63,53 @@ class Contract {
             + "Quantity: " + this.quantity + "\n"
             + "CPU: " + this.cpu + "\n";
         return contractContent;
+    }
+
+    toButtons() {
+        if (this.status == "OPEN") {
+            return new ActionRowBuilder()
+                .addComponents([
+                    new ButtonBuilder()
+                        .setCustomId(this.accept_id)
+                        .setLabel('Accept')
+                        .setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder()
+                        .setCustomId(this.cancel_id)
+                        .setLabel('Cancel')
+                        .setStyle(ButtonStyle.Danger)
+                ]);
+        }
+        if (this.status == "IN PROGRESS") {
+            return new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId(this.vendors_id)
+                        .setLabel("Vendors")
+                        .setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder()
+                        .setCustomId(this.complete_id)
+                        .setLabel('Complete')
+                        .setStyle(ButtonStyle.Success),
+                    new ButtonBuilder()
+                        .setCustomId(this.unaccept_id)
+                        .setLabel('Unaccept')
+                        .setStyle(ButtonStyle.Danger),
+                );
+        }
+        if (this.status == "COMPLETE") {
+            return new ActionRowBuilder()
+                .addComponents([
+                    new ButtonBuilder()
+                        .setCustomId(this.confirm_id)
+                        .setLabel('Confirm')
+                        .setStyle(ButtonStyle.Success),
+                    new ButtonBuilder()
+                        .setCustomId(this.uncomplete_id)
+                        .setLabel('Uncomplete')
+                        .setStyle(ButtonStyle.Danger),
+
+                ]);
+        }
     }
 }
 
