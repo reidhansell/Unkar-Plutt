@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const { openContract } = require('../databaseManager');
 const { v4: uuidv4 } = require('uuid');
 const Contract = require("../objects/Contract");
@@ -54,19 +54,7 @@ module.exports = {
             "confirm_id": uuidv4(),
         })
 
-        const contractButtons = new ActionRowBuilder()
-            .addComponents([
-                new ButtonBuilder()
-                    .setCustomId(contractObject.accept_id)
-                    .setLabel('Accept')
-                    .setStyle(ButtonStyle.Primary),
-                new ButtonBuilder()
-                    .setCustomId(contractObject.cancel_id)
-                    .setLabel('Cancel')
-                    .setStyle(ButtonStyle.Danger)
-            ]);
-
-        await contract.editReply({ content: contractObject.toString(), components: [contractButtons] });
+        await contract.editReply({ content: contractObject.toString(), components: [contractObject.toButtons()] });
 
         openContract(contractObject);
 
