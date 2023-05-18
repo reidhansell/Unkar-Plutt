@@ -10,9 +10,13 @@ module.exports = {
         let contractObjects = getContractObjects(interaction.user.id);
         for (let i = 0; i < contractObjects.length; i++) {
             if (contractObjects[i].message_id && contractObjects[i].channel_id) {
-                let channel = await interaction.guild.channels.fetch(contractObjects[i].channel_id);
-                let message = await channel.messages.fetch(contractObjects[i].message_id);
-                message.delete();
+                try {
+                    let channel = await interaction.guild.channels.fetch(contractObjects[i].channel_id);
+                    let message = await channel.messages.fetch(contractObjects[i].message_id);
+                    message.delete();
+                } catch (error) {
+                    console.error(error);
+                }
             }
             let oldURL = contractObjects[i].url;
             let message = await interaction.channel.send({ content: contractObjects[i].toString(), components: [contractObjects[i].toButtons()] });
