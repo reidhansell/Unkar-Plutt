@@ -19,9 +19,9 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
         try {
-            vendorObject = new Vendor(interaction.user.id, interaction.options.getString("vendor_name").replace(/[^a-zA-Z0-9 ]/g, '').trim(), interaction.options.getString("vendor_location").replace(/[^a-zA-Z0-9 ]/g, '').trim());
+            vendorObject = new Vendor(interaction.user.id, interaction.options.getString("vendor_name").trim(), interaction.options.getString("vendor_location").trim());
             registerVendor(vendorObject);
-            const response = interaction.options.getString('vendor_name').replace(/[^a-zA-Z0-9 ]/g, '').trim() + " has been registered."
+            const response = interaction.options.getString('vendor_name').trim() + " has been registered."
             await interaction.editReply({ content: response });
         }
         catch (error) {

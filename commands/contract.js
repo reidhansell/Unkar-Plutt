@@ -32,7 +32,7 @@ module.exports = {
         if (resource.indexOf("=") != -1) {
             resource = resource.substring(resource.indexOf("=") + 1);
         }
-        resource = resource.replace(/[^a-zA-Z0-9 ]/g, '').trim();
+        resource = resource.trim();
         await contract.fetchReply().then(reply => { url = reply.url; message_id = reply.id; channel_id = reply.channel.id });
 
         var contractObject = new Contract({
@@ -41,8 +41,8 @@ module.exports = {
             "status": "OPEN",
             "url": url,
             "resource": resource,
-            "quantity": contract.options.getString("quantity").replace(/[^a-zA-Z0-9 .]/g, '').trim(),
-            "cpu": contract.options.getString("cpu").replace(/[^a-zA-Z0-9 .]/g, '').trim(),
+            "quantity": contract.options.getString("quantity").trim(),
+            "cpu": contract.options.getString("cpu").trim(),
             "message_id": message_id,
             "channel_id": channel_id,
             "accept_id": uuidv4(),

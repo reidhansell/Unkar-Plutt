@@ -13,8 +13,8 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
         try {
-            unregisterVendor(interaction.user.id, interaction.options.getString("vendor_name").replace(/[^a-zA-Z0-9 ]/g, '').trim());
-            const response = interaction.options.getString('vendor_name').replace(/[^a-zA-Z0-9 ]/g, '').trim() + " has been unregistered."
+            unregisterVendor(interaction.user.id, interaction.options.getString("vendor_name").trim());
+            const response = interaction.options.getString('vendor_name').trim() + " has been unregistered."
             await interaction.editReply({ content: response });
         }
         catch (error) { await interaction.editReply({ content: error }) }
