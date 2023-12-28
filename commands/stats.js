@@ -69,7 +69,7 @@ export async function execute(interaction) {
         const contractObject = JSON.parse(contract.contract_object);
         if (contractObject.status === "CONFIRMED") {
             minerContractsConfirmed++;
-            const quantityFloat = parseFloat(contractObject.quantity);
+            const quantityFloat = parseShorthandNumber(contractObject.quantity);
             const cpuFloat = parseFloat(contractObject.cpu);
             if (!isNaN(quantityFloat) && !isNaN(cpuFloat)) {
                 creditsMade += quantityFloat * cpuFloat;
