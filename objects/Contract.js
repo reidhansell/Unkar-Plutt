@@ -60,7 +60,7 @@ class Contract {
             + "Crafter: <@" + this.crafter_id + ">\n"
             + minerLine
             + "Resource: https://swgtracker.com/?r=" + this.resource + "\n"
-            + "Quantity: " + this.quantity + "\n"
+            + "Quantity: " + this.quantity.toLocaleString() + "\n"
             + "CPU: " + this.cpu + "\n";
         return contractContent;
     }
