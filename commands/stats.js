@@ -45,7 +45,6 @@ export async function execute(interaction) {
             const quantityFloat = parseShorthandNumber(contractObject.quantity);
             const cpuFloat = parseFloat(contractObject.cpu);
             if (!isNaN(quantityFloat) && !isNaN(cpuFloat)) {
-                console.log("quantityFloat: ", quantityFloat, " cpuFloat: ", cpuFloat, " total: ", quantityFloat * cpuFloat);
                 creditsSpent += quantityFloat * cpuFloat;
             }
         }
