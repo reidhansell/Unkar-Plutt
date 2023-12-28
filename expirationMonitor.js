@@ -1,4 +1,4 @@
-import {getExpiredContracts, updateContract, getCrafterContracts } from './databaseManager.js';
+import {getExpiredContracts, updateContract, getCrafterContracts, getMinerContracts } from './databaseManager.js';
 import Contract from './objects/Contract.js';
 
 export async function markExpiredContracts() {
