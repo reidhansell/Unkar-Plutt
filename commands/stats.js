@@ -1,6 +1,20 @@
 import { SlashCommandBuilder } from "discord.js";
 import { getCrafterContracts, getMinerContracts, getTotalContractCount } from "../databaseManager.js";
 
+function parseShorthandNumber(str) {
+    const units = { k: 1000, m: 1000000 };
+    const regex = /(\d+(?:\.\d+)?)(k|m)/i;
+
+    const match = str.toLowerCase().match(regex);
+    if (match) {
+        const value = parseFloat(match[1]);
+        const unit = units[match[2]];
+        return value * unit;
+    }
+
+    return parseFloat(str);
+}
+
 export const data = new SlashCommandBuilder()
     .setName('my_stats')
     .setDescription('See your contract stats!');
@@ -28,7 +42,7 @@ export async function execute(interaction) {
         const contractObject = JSON.parse(contract.contract_object);
         if (contractObject.status === "CONFIRMED") {
             crafterContractsConfirmed++;
-            const quantityFloat = parseFloat(contractObject.quantity);
+            const quantityFloat = parseShorthandNumber(contractObject.quantity);
             const cpuFloat = parseFloat(contractObject.cpu);
             if (!isNaN(quantityFloat) && !isNaN(cpuFloat)) {
                 console.log("quantityFloat: ", quantityFloat, " cpuFloat: ", cpuFloat, " total: ", quantityFloat * cpuFloat);
