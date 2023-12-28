@@ -8,6 +8,7 @@ export async function execute(interaction) {
     const response = "**Commands:**\n"
         + "/contract {name} {quantity} {cpu}\n"
         + "/my_contracts\n"
+        + "/expire_contract {url}\n"
         + "/toggle_notifications (default is OFF)\n"
         + "/register_vendor {name} {location}\n"
         + "/unregister_vendor {name}\n"
