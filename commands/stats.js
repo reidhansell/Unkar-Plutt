@@ -43,7 +43,7 @@ export async function execute(interaction) {
         else if (contractObject.status === "CANCELLED") {
             crafterContractsCancelled++;
         }
-        else if (contractObject.status === "COMPLETED") {
+        else if (contractObject.status === "COMPLETE") {
             crafterContractsCompleted++;
         }
         else if (contractObject.status === "EXPIRED") {
@@ -53,7 +53,7 @@ export async function execute(interaction) {
 
     for (let contract of minerContracts) {
         const contractObject = JSON.parse(contract.contract_object);
-        if (contractObject.status === "COMPLETED") {
+        if (contractObject.status === "COMPLETE") {
             minerContractsCompleted++;
             creditsSpent += contractObject.quantity;
         }
