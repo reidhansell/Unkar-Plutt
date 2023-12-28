@@ -28,6 +28,15 @@ export async function markSingleContractExpired(crafter_id, url) {
                 break;
             }
         }
+        const minerContractData = await getMinerContracts(crafter_id);
+        for (let singleContractData of minerContractData) {
+            let contract = new Contract(JSON.parse(singleContractData.contract_object));
+            if (contract.url === url) {
+                contract.setStatus("EXPIRED");
+                await updateContract(contract);
+                break;
+            }
+        }
     } catch (error) {
         console.error("Error marking contract as expired:", error);
     }
