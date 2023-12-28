@@ -9,6 +9,12 @@ createContractTable.run();
 const createNotificationTable = db.prepare("CREATE TABLE IF NOT EXISTS notification (user_id TEXT)");
 createNotificationTable.run();
 
+const tableInfo = db.prepare("PRAGMA table_info(contract)").all();
+if (!tableInfo.some(column => column.name === 'created_at')) {
+    db.prepare("ALTER TABLE contract ADD COLUMN created_at DATETIME").run();
+    db.prepare("UPDATE contract SET created_at = datetime('now') WHERE created_at IS NULL").run();
+}
+
 async function registerVendor(vendorObject) {
     const getVendor = db.prepare("SELECT * FROM vendor WHERE owner_id = ? AND name = ?");
     let vendor = getVendor.get(vendorObject.ownerID, vendorObject.name);
@@ -42,7 +48,7 @@ async function getVendors(ownerID) {
 }
 
 async function openContract(contractObject) {
-    const openContract = db.prepare("INSERT INTO contract VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    const openContract = db.prepare("INSERT INTO contract VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))");
     openContract.run(
         contractObject.crafter_id,
         contractObject.miner_id,
@@ -142,7 +148,7 @@ async function getMinerContracts(userID) {
 }
 
 async function getExpiredContracts() {
-    const expiredContractsQuery = db.prepare("SELECT contract_object FROM contract WHERE status IN ('OPEN', 'IN PROGRESS', 'COMPLETE') AND (strftime('%s','now') - strftime('%s', JSON_EXTRACT(contract_object, '$.created_at'))) > 2419200");
+    const expiredContractsQuery = db.prepare("SELECT contract_object FROM contract WHERE status IN ('OPEN', 'IN PROGRESS', 'COMPLETE') AND (strftime('%s','now') - strftime('%s', created_at)) > 2419200");
     const expiredContracts = expiredContractsQuery.all();
     return expiredContracts;
 }

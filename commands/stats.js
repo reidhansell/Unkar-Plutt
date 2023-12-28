@@ -16,13 +16,13 @@ export async function execute(interaction) {
     let crafterContractsCancelled = 0;
     let crafterContractsConfirmed = 0;
     let crafterContractsExpired = 0;
-    let creditsMade = 0;
-
+    let creditsSpent = 0;
+    
     let minerContractsCompleted = 0;
     let minerContractsInProgress = 0;
     let minerContractsConfirmed = 0;
     let minerContractsExpired = 0;
-    let creditsSpent = 0;
+    let creditsMade = 0;
 
     for (let contract of crafterContracts) {
         const contractObject = JSON.parse(contract.contract_object);
@@ -31,7 +31,7 @@ export async function execute(interaction) {
             const quantityFloat = parseFloat(contractObject.quantity);
             const cpuFloat = parseFloat(contractObject.cpu);
             if (!isNaN(quantityFloat) && !isNaN(cpuFloat)) {
-                creditsMade += quantityFloat * cpuFloat;
+                creditsSpent += quantityFloat * cpuFloat;
             }
         }
         else if (contractObject.status === "OPEN") {
@@ -53,15 +53,19 @@ export async function execute(interaction) {
 
     for (let contract of minerContracts) {
         const contractObject = JSON.parse(contract.contract_object);
-        if (contractObject.status === "COMPLETE") {
-            minerContractsCompleted++;
-            creditsSpent += contractObject.quantity;
+        if (contractObject.status === "CONFIRMED") {
+            minerContractsConfirmed++;
+            const quantityFloat = parseFloat(contractObject.quantity);
+            const cpuFloat = parseFloat(contractObject.cpu);
+            if (!isNaN(quantityFloat) && !isNaN(cpuFloat)) {
+                creditsMade += quantityFloat * cpuFloat;
+            }
         }
         else if (contractObject.status === "IN PROGRESS") {
             minerContractsInProgress++;
         }
-        else if (contractObject.status === "CONFIRMED") {
-            minerContractsConfirmed++;
+        else if (contractObject.status === "COMPLETE") {
+            minerContractsCompleted++;
         }
         else if (contractObject.status === "EXPIRED") {
             minerContractsExpired++;
@@ -72,7 +76,7 @@ export async function execute(interaction) {
         `**Your Contract Statistics**
 \`\`\`
 Crafter Contracts:
-- Credits Made (confirmed contracts): ${creditsMade.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+- Credits Spent (confirmed contracts): ${creditsSpent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 - Confirmed: ${crafterContractsConfirmed}
 - Completed: ${crafterContractsCompleted}
 - In Progress: ${crafterContractsInProgress}
@@ -81,13 +85,13 @@ Crafter Contracts:
 - Expired: ${crafterContractsExpired}
 
 Miner Contracts:
-- Credits Spent (confirmed contracts): ${creditsSpent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+- Credits Made (confirmed contracts): ${creditsMade.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 - Confirmed: ${minerContractsConfirmed}
 - Completed: ${minerContractsCompleted}
 - In Progress: ${minerContractsInProgress}
 - Expired: ${minerContractsExpired}
 \`\`\`
-You created ${crafterContracts.length + minerContracts.length} contracts out of ${totalContracts} total contracts on the server.`;
+You created ${crafterContracts.length} contracts and mined ${minerContracts.length} contracts out of ${totalContracts} total contracts on the server.`;
 
     await interaction.editReply({ content: response });
 
