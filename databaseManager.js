@@ -142,7 +142,7 @@ async function getMinerContracts(userID) {
 }
 
 async function getExpiredContracts() {
-    const expiredContractsQuery = db.prepare("SELECT contract_object FROM contract WHERE status = 'OPEN' AND (strftime('%s','now') - strftime('%s', JSON_EXTRACT(contract_object, '$.created_at'))) > 2419200");
+    const expiredContractsQuery = db.prepare("SELECT contract_object FROM contract WHERE status IN ('OPEN', 'IN PROGRESS', 'COMPLETED') AND (strftime('%s','now') - strftime('%s', JSON_EXTRACT(contract_object, '$.created_at'))) > 2419200");
     const expiredContracts = expiredContractsQuery.all();
     return expiredContracts;
 }
