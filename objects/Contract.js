@@ -1,4 +1,4 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 class Contract {
     crafter_id = "";
     miner_id = "";
@@ -113,4 +113,4 @@ class Contract {
     }
 }
 
-module.exports = Contract;
+export default Contract;

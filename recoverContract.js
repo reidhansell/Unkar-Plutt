@@ -1,21 +1,28 @@
-// Require the necessary discord.js classes
-const fs = require('node:fs');
-const path = require('node:path');
-const { Client, GatewayIntentBits, Collection, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, User, Message } = require('discord.js');
-const { token, guildId } = require('./config.json');
-const { openContract } = require('./databaseManager');
-const { v4: uuidv4 } = require('uuid');
-const Contract = require("./objects/Contract");
+/*  This file is not run by default. 
+    It is a tool for recovering contracts from the database.
+    This tool datamines old messages for contracts and inserts them into the DB.
+    It should be used when the database is wiped, major changes are made, etc. */
 
+import { readdirSync } from 'node:fs';
+import { join } from 'node:path';
+import { Client, GatewayIntentBits, Collection, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import config from './config.json' assert { type: 'json' };;
+const { token } = config;
+import { openContract } from './databaseManager';
+import { v4 as uuidv4 } from 'uuid';
+import Contract from "./objects/Contract.js";
+
+// Manually enter the guild ID, channel name, and message IDs here
+const guildID = '941946604309594142'; // SHADE ID
+const channelName = ""
+const message_ids = [];
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-
-const eventsPath = path.join(__dirname, 'events');
-const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
-
+const eventsPath = join(__dirname, 'events');
+const eventFiles = readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
-    const filePath = path.join(eventsPath, file);
+    const filePath = join(eventsPath, file);
     const event = require(filePath);
     if (event.once) {
         client.once(event.name, (...args) => event.execute(...args));
@@ -24,15 +31,13 @@ for (const file of eventFiles) {
     }
 }
 
+// Set the commands in the client
 client.commands = new Collection();
-
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-
+const commandsPath = join(__dirname, 'commands');
+const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
+    const filePath = join(commandsPath, file);
     const command = require(filePath);
-    // Set a new item in the Collection with the key as the command name and the value as the exported module
     if ('data' in command && 'execute' in command) {
         client.commands.set(command.data.name, command);
     } else {
@@ -40,17 +45,15 @@ for (const file of commandFiles) {
     }
 }
 
-// Log in to Discord with your client's token
+// Bot is ready, login and start the collectors
 client.login(token);
-
 client.on('ready', async () => {
 
-    const guild = client.guilds.cache.get(guildId);
+    const guild = client.guilds.cache.get(guildID);
     var textChannels = guild.channels.cache;
-    textChannels.sweep(channel => channel.name != /*Enter channel name here*/"");
+    textChannels.sweep(channel => channel.name != channelName);
     textChannels = textChannels.values();
     for (const channel of textChannels) {
-        const message_ids = [/*Enter IDs here*/];
         for (const message_id of message_ids) {
             var message = await channel.messages.fetch(message_id);
             const lines = message.content.split(/\r?\n/);

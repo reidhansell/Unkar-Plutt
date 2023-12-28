@@ -1,5 +1,5 @@
 {
-  "name": "swg-shade",
+  "name": "unkar-plutt",
   "version": "1.0.0",
   "description": "A Discord bot",
   "main": "index.js",
@@ -9,17 +9,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/reidhansell/SWG-SHADE.git"
+    "url": "git+https://github.com/reidhansell/Unkar-Plutt"
   },
   "author": "Reid Hansell",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/reidhansell/SWG-SHADE/issues"
+    "url": "https://github.com/reidhansell/Unkar-Plutt/issues"
   },
-  "homepage": "https://github.com/reidhansell/SWG-SHADE#readme",
+  "homepage": "https://github.com/reidhansell/Unkar-Plutt#readme",
   "dependencies": {
     "better-sqlite3": "^8.0.1",
     "discord.js": "^14.7.1",
+    "node-cron": "^3.0.3",
     "uuid": "^9.0.0"
-  }
+  },
+  "type": "module"
 }

@@ -9,4 +9,4 @@ class Vendor {
     }
 }
 
-module.exports = Vendor;
+export default Vendor;
