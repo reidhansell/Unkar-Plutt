@@ -13,7 +13,7 @@ export const data = new SlashCommandBuilder()
     .addIntegerOption(option => option.setName('quantity')
         .setDescription('How many units of said resource?')
         .setRequired(true))
-    .addIntegerOption(option => option.setName('cpu')
+    .addNumberOption(option => option.setName('cpu')
         .setDescription('How many credits per unit?')
         .setRequired(true));
 export async function execute(contract) {
@@ -22,9 +22,9 @@ export async function execute(contract) {
     let message_id = "";
     let channel_id = "";
     let quantity = contract.options.getInteger("quantity").toString().trim();
-    let cpu = contract.options.getInteger("cpu").toString().trim();
+    let cpu = contract.options.getNumber("cpu").toString().trim();
     let resource = contract.options.getString("resource").trim();
-    
+
     if (resource.indexOf("=") != -1) {
         resource = resource.substring(resource.indexOf("=") + 1);
     }
