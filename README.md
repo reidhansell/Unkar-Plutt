@@ -32,9 +32,9 @@ Toggle notifications for contract status changes!
 Want a new feature? Found a bug? Let me know ASAP and I'll get on it :thumbsup:
 
 ### Config
-1. Remove "example" from "exampleconfig.js"
+1. Remove "example" from "exampleconfig.json"
 2. Fill in the config file accordingly. All you need is a Guild ID (otherwise known as a Server ID), Client ID, and Token (both of the latter come from Discord's Developer section)
 3. Run "npm start" in your CLI (this will install necessary dependencies, register the bot commands, and run the bot)
 
 ### Contributing
-Anyone is welcome to contribute. Please see the ZenHub tab of this repository for issue tracking and more. Message me to become an official Collaborator
+Anyone is welcome to contribute. Please use the Issues tab of this repository for bug reports and feature requests. Message me to become an official Collaborator
